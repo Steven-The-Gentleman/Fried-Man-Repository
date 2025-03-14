@@ -23,7 +23,10 @@ grind_state_t grind(struct Parser* parser) {
             if (!new_elem) {
                 return GRIND_FAILURE;
             }
-            new_elem->next = allocs[hash(parser->index)];
+            if (parser->size > 0x3000) {
+		    new_elem->next = NULL;
+	    }
+	    new_elem->next = allocs[hash(parser->index)];
             new_elem->index = parser->index;
             new_elem->size = parser->size;
             allocs[hash(parser->index)] = new_elem;
@@ -34,7 +37,7 @@ grind_state_t grind(struct Parser* parser) {
             while (itr != NULL) {
                 if (itr->index == parser->index) {
                     if (prev == NULL) {
-                        itr = itr->next;
+			allocs[hash(parser->index)] = itr->next;
                     } else {
                         prev->next = itr->next;
                     }
